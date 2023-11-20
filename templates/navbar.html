@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-md">
+  <a class="navbar-brand text-light my-2 my-sm-0 custom-nav-logo" href="{% url 'home' %}">CX App</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+    </ul>
+    <div class="navbar-nav">
+      {% if user.is_authenticated %}
+      <div style="display: flex" class="btn-group" role="group">
+
+            <span class="navbar-text mr-2">Balance: ${{ user.profile.balance }}</span>
+            <a style="border-radius: 3px" class="btn btn-success my-2 my-sm-0 mr-2" href="{% url 'portfolio' %}">View My Wallet</a>
+            <a style="border-radius: 3px" class="btn btn-danger my-2 my-sm-0 mr-2" href="{% url 'logout' %}">Logout</a>
+          <!-- Profile Dropdown -->
+          <div class="btn-group my-2 my-sm-0 mr-2">
+              <a class="btn btn-info dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="{{ user.profile.id_photo.url }}" alt="Profile Photo" class="profile-pic-nav">
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item" href="{% url 'edit_profile' %}">Edit Profile</a>
+                    <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    <a class="dropdown-item" href="{% url 'add_money' %}">Add Money to Wallet</a>
+                    <a class="dropdown-item" href="{% url 'transaction_history' %}">View Transactions</a>
+              </div>
+        </div>
+
+      </div>
+
+      {% else %}
+      <div class="btn-group" role="group">
+        <a class="btn btn-primary my-2 my-sm-0 mr-2" href="{% url 'login' %}">Login</a>
+        <a class="btn btn-success my-2 my-sm-0" href="{% url 'signup' %}">Signup</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
