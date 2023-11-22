@@ -132,3 +132,47 @@ def logout_view(request):
     request.session.flush()
     return redirect('home')
 
+@login_required(login_url="login")
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have successfully logged out!')
+    request.session.flush()
+    return redirect('home')
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('portfolio')
+    else:
+        form = EditProfileForm(instance=request.user)
+    return render(request, 'edit_profile.html', {'form': form})
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('portfolio')
+    else:
+        form = CustomPasswordChangeForm(request.user)
+    return render(request, 'change_password.html', {'form': form})
+
+
+
+
+@login_required
+def add_money(request):
+    if request.method == 'POST':
+        form = AddMoneyForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data.get('amount')
+            request.user.profile.balance += amount
+            request.user.profile.save()
+            return redirect('portfolio')
+    else:
+        form = AddMoneyForm()
+    return render(request, 'add_money.html', {'form': form})
+
