@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Home
+{% endblock title %}
+{% block content %}
+
+
+{% if user.is_authenticated %}
+<div class="row justify-content-left custom-title">
+<h2 class="text-uppercase text-primary welcome-user-text">Welcome {{ user.username | capfirst }} </h2>
+</div>
+{% endif %}
+
+<!--Print messages-->
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endfor %}
+{% endif %}
+
+
+
+
+
+
+<!--SEARCH BAR-->
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <h2 class="text-center custom-heading">Search Cryptocurrency</h2>
+  </div>
+  <div class="row mt-3 justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <form action="{% url 'search' %}" method="post">
+        {% csrf_token %}
+        <div class="input-group">
+            <label>
+                <input class="form-control" type="text" placeholder="Search cryptocurrencies..." name="search_query" required>
+            </label>
+            <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--GLOBAL CRYPTO CURRENCIES-->
+<div class="row justify-content-center">
+<h2 class="text-center mt-5 mb-0 custom-heading"> Top 10 CryptoCurrency Rankings </h2>
+</div>
+<br><br><br>
+<div class="flex-container">
+  {% if top_10_crypto_data_global %}
+      <table class="custom-table">
+        <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Market Cap</th>
+              <th>Price</th>
+              <th>Price Change 24H</th>
+              <th>Price Change 24H (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in top_10_crypto_data_global %}
+
+            <tr>
+                <td>{{obj.market_cap_rank}}</td>
+                <td>
+                    <img style="display: inline" src="{{obj.image}}" width="20" height="20" alt="">
+                    <!-- Add a form to make a POST request -->
+                    <form style="display: inline" action="{% url 'search' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="search_query" value="{{obj.name}}">
+                        <button type="submit" class="btn btn-link">{{obj.name}}</button>
+                    </form>
+                </td>
+                <td>{{obj.market_cap}}</td>
+                <td>{{obj.current_price}}</td>
+                <td>{{obj.price_change_24h|floatformat:5 }}</td>
+                <td>{{obj.price_change_percentage_24h|floatformat:3 }}</td>
+            </tr>
+
+
+{#            <tr>#}
+{#                <td>{{obj.market_cap_rank}}</td>#}
+{#              <td><img src="{{obj.image}}" width="20" height="20" alt="">&nbsp;{{obj.name}}</td>#}
+{#              <td>{{obj.market_cap}}</td>#}
+{#              <td>{{obj.current_price}}</td>#}
+{#              <td>{{obj.price_change_24h|floatformat:5 }}</td>#}
+{#              <td>{{obj.price_change_percentage_24h|floatformat:3 }}</td>#}
+{#            </tr>#}
+            {% endfor %}
+        </tbody>
+        </table>
+
+  {% else %}
+    <h3>No data</h3>
+  {% endif %}
+</div>
+
+
+
+<!--USER CRYPTO CURRENCIES-->
+{% if user.is_authenticated %}
+<div class="row justify-content-center">
+  <h2 class="text-center mt-5 mb-3 custom-heading">24H Summary of Your Cryptos </h2>
+</div>
+{% if user_cryptocurrencies %}
+<div class="table-responsive" >
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Owned</th>
+          <th>Price Shift</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k, v in crypto_price_changes.items %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ k }}</td>
+            <td>{{ v | floatformat:5}}
+              {% if v > 0 %}
+                <i class="fa fa-arrow-up green-arrow"></i>
+              {% else %}
+                <i class="fa fa-arrow-down red-arrow"></i>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% else %}
+<h3 class="text-center alert alert-danger">No Cryptocurrencies added to wallet. Use the search bar above. </h3>
+</div>
+{% endif %}
+{% endif %}
+
+<br><br><br>
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}

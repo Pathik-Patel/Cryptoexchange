@@ -13,7 +13,7 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     path('change_password/', views.change_password, name='change_password'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
-
+    path("portfolio/", views.portfolio_view, name="portfolio"),
     path("signup/", views.signup_view, name="signup"),
     
 
