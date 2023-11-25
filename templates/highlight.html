@@ -1,0 +1,421 @@
+{% block content %}
+{% load static %}
+<style>
+.card {
+  width: 300px; /* Adjust width as needed */
+  background: #fff;
+
+
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: #f0f0f0;
+}
+
+.fire-icon {
+  margin-right: 5px;
+}
+
+.card-content {
+  padding: 10px;
+}
+
+.currency {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.currency-rank {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.currency-icon {
+  width: 20px; /* Adjust size as needed */
+  height: 20px; /* Adjust size as needed */
+  margin-right: 5px;
+}
+
+.currency-name {
+  margin-right: auto;
+}
+
+.currency-symbol {
+  background: #e0e0e0;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin-right: 10px;
+}
+
+.currency-change {
+
+    margin-left: auto;
+  font-weight: bold;
+}
+
+.increase {
+  color: green;
+}
+
+body {
+
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  font-family: 'Poppins', sans-serif;
+}
+  .highlight-container{
+  max-width: 75rem;
+    display: block;
+
+}
+.highlight-container.active{
+    display: block;
+}
+* {
+  box-sizing: border-box;
+  scrollbar-color: transparent transparent; /* thumb and track color */
+
+}
+*::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+
+ol, li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.carousel_container{
+    display: flex;
+}
+.carousel {
+  position: relative;
+  padding-top: 26%;
+    flex-grow: 1;
+  filter: drop-shadow(0 0 10px #0003);
+  perspective: 100px;
+    border-radius: 10px;
+    margin: 20px;
+}
+.dynamic-name:hover{
+color: blue;
+cursor: pointer;
+}
+.carousel__viewport {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  overflow-x: scroll;
+  counter-reset: item;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+      
+}
+
+.carousel__slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  counter-increment: item;
+    max-height: 200px;
+}
+
+
+
+.carousel__slide:before {
+  content: counter(item);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%,-40%,70px);
+  color: #fff;
+  font-size: 2em;
+}
+
+.carousel__snapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  scroll-snap-align: center;
+}
+
+/* Styles for the toggle switch container */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+
+        /* Styles for the switch input */
+        .toggle-input {
+            display: none;
+        }
+
+        /* Styles for the switch label (slider) */
+        .toggle-label {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 20px;
+            background-color: #ccc;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+
+        /* Styles for the switch input when checked */
+        .toggle-input:checked + .toggle-label {
+            background-color: #4CAF50; /* Green background when checked */
+        }
+
+        /* Styles for the switch thumb when checked */
+        .toggle-input:checked + .toggle-label .toggle-thumb {
+            transform: translateX(20px); /* Move the thumb to the right when checked */
+        }
+         .toggle-input:focus + .toggle-label {
+            box-shadow: 0 0 3px 3px rgba(0, 0, 255, 0.3); /* Example: Highlight the label when clicked */
+        }
+         .header{
+              text-align: center;
+    display: flex;
+    color: black;
+    margin: 20px 0;
+         }
+
+
+
+
+@media screen and (max-width: 720px) {
+    .hide-mobile {
+        display: none;
+    }
+}
+</style>
+    <div class="highlight-container" id="highlight_section">
+<h2 style="text-align: center;">Highlight Section</h2>
+
+<section class="carousel_container">
+<section class="carousel" aria-label="Gallery">
+  <ol class="carousel__viewport">
+    <li id="carousel__slide1"
+        tabindex="0"
+        class="carousel__slide">
+
+        <div class="card carousel__snapper">
+  <div class="card-header">
+
+
+      <h2 style="margin: 0"><span class="fire-icon">🔥</span>Trending </h2>
+
+  </div>
+  <div class="card-content">
+      <ol>
+      {% with break_at_index=4 %}
+  {% for data in top_10_crypto_data_global %}
+    {% if forloop.counter < break_at_index %}
+      <li style="display: flex">
+            <p class="currency-rank">{{ forloop.counter }}</p>
+          <p style="font-weight:600;font-size: 16px" >
+
+          <a href="/coins/{{data.name  }}" style="text-decoration: none;color: black"><img src="{{ data.image }}" alt="{{ data.symbol }}" width="30" height="30"> <span class="dynamic-name" style="position: relative;top: -9px">{{ data.name }}  <span style="color: #789;font-weight: normal;text-transform: uppercase ">{{ data.symbol }}</span></span></a></p>
+          {% if data.price_change_percentage_24h > 0 %}
+           <p class="currency-change" style="color: green">+ {{data.price_change_percentage_24h|floatformat:2}}%</p>
+        {% else %}
+           <p class="currency-change" style="color: red">{{data.price_change_percentage_24h|floatformat:2}}%</p>
+         {% endif %}
+
+      </li>
+
+
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+
+      </ol>
+  </div>
+</div>
+    </li>
+    <li id="carousel__slide1"
+        tabindex="0"
+        class="carousel__slide">
+
+        <div class="card carousel__snapper">
+  <div class="card-header">
+
+    <h2 style="margin: 0"><span class="fire-icon">🕕 </span>Recently Added</h2>
+
+
+  </div>
+  <div class="card-content">
+      <ol>
+      {% with break_at_index=4 %}
+  {% for data in top_10_crypto_data_global %}
+    {% if forloop.counter < break_at_index %}
+      <li style="display: flex" >
+            <p class="currency-rank">{{ forloop.counter }}</p>
+          <p style="font-weight:600;font-size: 16px" >
+
+          <a href="/coins/{{data.name  }}" style="text-decoration: none;color: black"><img src="{{ data.image }}" alt="{{ data.symbol }}" width="30" height="30"> <span class="dynamic-name" style="position: relative;top: -9px">{{ data.name }}  <span style="color: #789;font-weight: normal;text-transform: uppercase ">{{ data.symbol }}</span></span></a></p>
+          {% if data.price_change_percentage_24h > 0 %}
+           <p class="currency-change" style="color: green">+ {{data.price_change_percentage_24h|floatformat:2}}%</p>
+        {% else %}
+           <p class="currency-change" style="color: red">{{data.price_change_percentage_24h|floatformat:2}}%</p>
+         {% endif %}
+
+      </li>
+
+
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+
+      </ol>
+  </div>
+</div>
+    </li>
+
+  </ol>
+
+</section>
+    <section class="carousel" aria-label="Gallery">
+  <ol class="carousel__viewport">
+    <li id="carousel__slide1"
+        tabindex="0"
+        class="carousel__slide">
+
+        <div class="card carousel__snapper">
+  <div class="card-header">
+
+
+<h2 style="margin: 0"> <span style="color: green;">▲ </span>24 hour Gain</h2>
+  </div>
+  <div class="card-content">
+      <ol>
+      {% with break_at_index=4 %}
+{#  {% for data in coins|slice:"3:" %}#}
+  {% for data in top_10_crypto_data_global|dictsortreversed:"price_change_percentage_24h" %}
+    {% if forloop.counter < break_at_index %}
+      <li style="display: flex">
+            <p class="currency-rank">{{ forloop.counter }}</p>
+          <p style="font-weight:600;font-size: 16px" >
+
+          <a href="/coins/{{data.name  }}" style="text-decoration: none;color: black"><img src="{{ data.image }}" alt="{{ data.symbol }}" width="30" height="30"> <span class="dynamic-name" style="position: relative;top: -9px">{{ data.name }}  <span style="color: #789;font-weight: normal;text-transform: uppercase ">{{ data.symbol }}</span></span></a></p>
+          {% if data.price_change_percentage_24h > 0 %}
+           <p class="currency-change" style="color: green">+ {{data.price_change_percentage_24h|floatformat:2}}%</p>
+        {% else %}
+           <p class="currency-change" style="color: red">{{data.price_change_percentage_24h|floatformat:2}}%</p>
+         {% endif %}
+
+      </li>
+
+
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+
+      </ol>
+  </div>
+</div>
+    </li>
+    <li id="carousel__slide1"
+        tabindex="0"
+        class="carousel__slide">
+
+        <div class="card carousel__snapper">
+  <div class="card-header">
+
+    <h2 style="margin: 0"><span class="fire-icon">🔻 </span>24 hour loss </h2>
+
+  </div>
+  <div class="card-content">
+      <ol>
+      {% with break_at_index=4 %}
+{#  {% for data in coins|slice:"6:" %}#}
+   {% for data in top_10_crypto_data_global|dictsort:"price_change_percentage_24h" %}
+    {% if forloop.counter < break_at_index %}
+      <li style="display: flex">
+            <p class="currency-rank">{{ forloop.counter }}</p>
+          <p style="font-weight:600;font-size: 16px" >
+
+          <a href="/coins/{{data.name  }}" style="text-decoration: none;color: black"><img src="{{ data.image }}" alt="{{ data.symbol }}" width="30" height="30"> <span class="dynamic-name" style="position: relative;top: -9px">{{ data.name }}  <span style="color: #789;font-weight: normal;text-transform: uppercase ">{{ data.symbol }}</span></span></a></p>
+          {% if data.price_change_percentage_24h > 0 %}
+           <p class="currency-change" style="color: green">+ {{data.price_change_percentage_24h|floatformat:2}}%</p>
+        {% else %}
+           <p class="currency-change" style="color: red">{{data.price_change_percentage_24h|floatformat:2}}%</p>
+         {% endif %}
+
+      </li>
+
+
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+
+      </ol>
+  </div>
+</div>
+    </li>
+
+  </ol>
+
+</section>
+<section class="carousel" aria-label="Gallery">
+  <ol class="carousel__viewport">
+    <li id="carousel__slide1"
+        tabindex="0"
+        class="carousel__slide">
+
+        <div class="card carousel__snapper">
+  <div class="card-header">
+
+
+<h2 style="margin: 0"><span class="fire-icon">💰</span>Top Market Cap </h2>
+  </div>
+  <div class="card-content">
+      <ol>
+      {% with break_at_index=4 %}
+  {% for data in top_10_crypto_data_global|slice:"7:" %}
+    {% if forloop.counter < break_at_index %}
+      <li style="display: flex">
+            <p class="currency-rank">{{ forloop.counter }}</p>
+          <p style="font-weight:600;font-size: 16px" >
+
+          <a href="/coins/{{data.name  }}" style="text-decoration: none;color: black"><img src="{{ data.image }}" alt="{{ data.symbol }}" width="30" height="30"> <span class="dynamic-name" style="position: relative;top: -9px">{{ data.name }}  <span style="color: #789;font-weight: normal;text-transform: uppercase ">{{ data.symbol }}</span></span></a></p>
+          {% if data.price_change_percentage_24h > 0 %}
+           <p class="currency-change" style="color: green">+ {{data.price_change_percentage_24h|floatformat:2}}%</p>
+        {% else %}
+           <p class="currency-change" style="color: red">{{data.price_change_percentage_24h|floatformat:2}}%</p>
+         {% endif %}
+
+      </li>
+
+
+    {% endif %}
+  {% endfor %}
+{% endwith %}
+
+      </ol>
+  </div>
+</div>
+   </li>
+
+
+  </ol>
+
+</section>
+</section>
+</div>
+      {% endblock content %}

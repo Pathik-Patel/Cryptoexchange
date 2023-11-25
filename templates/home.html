@@ -26,7 +26,29 @@ Home
 
 
 
+<input id="highlightCheckbox" type="checkbox" onclick="toggleHighlight()"> Show Highlight
 
+<div id="highlightContent" style="display: none;">
+    {% include 'highlight.html' %}
+</div>
+
+<script>
+function toggleHighlight() {
+    var checkBox = document.getElementById("highlightCheckbox");
+    var highlightContent = document.getElementById("highlightContent");
+    if (checkBox.checked === true){
+        highlightContent.style.display = "block";
+    } else {
+        highlightContent.style.display = "none";
+    }
+}
+</script>
+
+
+
+<div id="highlightContent" style="display: none;">
+    {% include 'highlight.html' %}
+</div>
 
 
 <!--SEARCH BAR-->
