@@ -336,3 +336,67 @@ def delete_from_portfolio_view(request, pk):
 
     return redirect('portfolio')
 
+
+@login_required(login_url="login")
+def buy_crypto(request):
+    if request.method != 'POST':
+        return HttpResponse(
+            'Need a crypto currency to buy. Go back to the home page and search for a crypto currency.')
+
+    # get values from the form
+    coin_id = request.POST.get('id')
+    quantity = float(request.POST.get('quantity'))
+
+    # get the crypto currency data from the coingecko api based on the coin id
+    api_url = f'https://api.coingecko.com/api/v3/coins/{coin_id}'
+    response = requests.get(api_url)
+    data = response.json()
+
+    # store the name, symbol, current price, and market cap rank of the crypto currency
+    user = request.user
+    name = data['name']
+    id_from_api = data['id']
+    symbol = data['symbol']
+    current_price = data['market_data']['current_price']['usd']
+
+    # calculate the total cost of the purchase
+    total_cost = Decimal(quantity) * Decimal(current_price)
+
+    # get the user's profile
+    profile = Profile.objects.get(user=user)
+
+    # check if the user has enough balance to make the purchase
+    if profile.balance < total_cost:
+        messages.error(request, 'You do not have enough balance to make this purchase.')
+        return redirect('portfolio')
+
+    # deduct the cost of the purchase from the user's balance
+    profile.balance -= total_cost
+    profile.save()
+
+
+    try:
+        # save the crypto currency to the database
+        crypto_currency = Cryptocurrency.objects.create(
+            user=user,
+            name=name,
+            id_from_api=id_from_api,
+            symbol=symbol,
+            quantity=Decimal(quantity),
+            current_price=current_price,
+        )
+    except IntegrityError:
+        crypto_currency = Cryptocurrency.objects.get(user=user, name=name)
+        crypto_currency.quantity += Decimal(quantity)
+
+    crypto_currency.save()
+
+    # create a new transaction
+    transaction = Transaction(user=request.user, cryptocurrency=crypto_currency, quantity=quantity,
+                              price_per_unit=current_price, total_amount=total_cost, transaction_type='BUY')
+    transaction.save()
+
+    messages.success(request, f'{name} has been added to your portfolio.')
+
+    # if all the above steps are successful, redirect the user to the portfolio page
+    return redirect('portfolio')
