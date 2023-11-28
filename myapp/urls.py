@@ -11,15 +11,24 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path('change_password/', views.change_password, name='change_password'),
-    path('change_password/', views.change_password, name='change_password'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
-    path("portfolio/", views.portfolio_view, name="portfolio"),
+
     path("signup/", views.signup_view, name="signup"),
+    path('signup/<str:referral_code>/', views.signup_with_referrer_view, name='signup_with_referrer_view'),
+    path('transaction_history/', views.transaction_history, name='transaction_history'),
+
+    # wallet_page_means_portfolio
+    path("portfolio/", views.portfolio_view, name="portfolio"),
+
+    path('add_money/', views.add_money, name='add_money'),
+
+    # CRUD operations on cryptos
     path("search/", views.search_view, name="search"),
     path("add_to_portfolio/", views.add_to_portfolio_view, name="add_to_portfolio"),
     path('delete_from_portfolio/<int:pk>/', views.delete_from_portfolio_view, name='delete_from_portfolio'),
     path('buy_crypto/', views.buy_crypto, name='buy_crypto'),
     path('sell_crypto/<int:pk>/', views.sell_crypto, name='sell_crypto'),
+    # password reset stuff
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name="reset/password_reset.html"),
          name='password_reset'),
 
