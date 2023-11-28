@@ -19,6 +19,7 @@ urlpatterns = [
     path("add_to_portfolio/", views.add_to_portfolio_view, name="add_to_portfolio"),
     path('delete_from_portfolio/<int:pk>/', views.delete_from_portfolio_view, name='delete_from_portfolio'),
     path('buy_crypto/', views.buy_crypto, name='buy_crypto'),
+    path('sell_crypto/<int:pk>/', views.sell_crypto, name='sell_crypto'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name="reset/password_reset.html"),
          name='password_reset'),
 

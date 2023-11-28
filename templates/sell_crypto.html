@@ -1,0 +1,32 @@
+<!-- sell_crypto.html -->
+{% extends 'base.html' %} {% block title %} Sell Cryptocurrency {% endblock title %} {% block content %}
+
+<div class="text-white border-0 col-md-8 mx-auto mt-5">
+  <div class="card mb-3 text-center border-0">
+    <div class="row justify-content-center align-items-center p-5">
+
+      <div class="col-md-4">
+        <img src="{{ image }}" height="150" width="150" class="img-fluid" alt="{{ symbol }}">
+      </div>
+
+      <div class="col-md-4">
+        <div class="card-body text-dark">
+          <h5 class="card-title text-uppercase mb-2"><b>{{ name }}</b><p class="card-subtitle mb-2 text-muted"><b>[{{ symbol }}]</b></p></h5>
+
+          <p class="card-text text-uppercase mb-2"><small><b>Current Price:</b> {{ current_price }}</small></p>
+          <p class="card-text text-uppercase mb-2"><small><b>Units Owned:</b> {{ crypto.quantity }}</small></p>
+            <p class="card-text text-uppercase mb-2"><small><b>CURRENT PRICE PER UNIT:</b> ${{ current_price }}</small></p>
+          <form action="{% url 'sell_crypto' crypto.id %}" method="post" class="d-inline-block">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ crypto.id }}">
+            <label class="mr-2 font-weight-bold text-uppercase">Units to Sell</label>
+            <input type="number" name="quantity" min="1" max="{{ crypto.quantity }}" value="1" class="form-control d-inline-block w-auto mr-2 mb-2"><br>
+            <button type="submit" class="btn btn-primary text-uppercase">Sell</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %} {% block scripts %}  {% endblock scripts %}

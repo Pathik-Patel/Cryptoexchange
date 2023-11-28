@@ -400,3 +400,67 @@ def buy_crypto(request):
 
     # if all the above steps are successful, redirect the user to the portfolio page
     return redirect('portfolio')
+
+
+
+@login_required(login_url="login")
+def sell_crypto(request, pk):
+    crypto = get_object_or_404(Cryptocurrency, pk=pk)
+    profile = Profile.objects.get(user=request.user)
+
+    # get the crypto currency data from the coingecko api based on the coin id
+    api_url = f'https://api.coingecko.com/api/v3/coins/{crypto.id_from_api}'
+    response = requests.get(api_url)
+    data = response.json()
+
+    # store the name, symbol, current price, image, and market cap rank of the crypto currency
+    name = data['name']
+    id_from_api = data['id']
+    symbol = data['symbol']
+    current_price = data['market_data']['current_price']['usd']
+    image = data['image']['large']
+    market_cap = data['market_cap_rank']
+
+    if request.method == 'POST':
+        quantity = Decimal(request.POST['quantity'])
+        real_time_price = Decimal(get_crypto_price(crypto.id_from_api, 'usd'))
+        total_price = quantity * real_time_price
+
+        if crypto.quantity < quantity:
+            messages.error(request, 'You do not have enough units to sell.')
+            return redirect('portfolio')
+
+        # deduct the quantity from the user's cryptocurrency
+        crypto.quantity -= quantity
+        crypto.save()
+
+        # add the price of the sold cryptocurrency to the user's balance
+        profile.balance += total_price
+        profile.save()
+
+        # create a new transaction
+        transaction = Transaction(user=request.user, cryptocurrency=crypto, quantity=quantity,
+                                  price_per_unit=current_price, total_amount=total_price, transaction_type='SELL')
+        transaction.save()
+
+        messages.success(request, f'{quantity} units of {name} have been successfully sold.')
+        return redirect('portfolio')
+
+    # Prepare the context for the template
+    context = {
+        'crypto': crypto,
+        'profile': profile,
+        'name': name,
+        'id_from_api': id_from_api,
+        'symbol': symbol,
+        'current_price': current_price,
+        'image': image,
+        'market_cap': market_cap,
+    }
+    return render(request, 'sell_crypto.html', context)
+
+
+def transaction_history(request):
+    transactions = Transaction.objects.filter(user=request.user).order_by('-timestamp')
+    return render(request, 'transaction_history.html', {'transactions': transactions})
+
