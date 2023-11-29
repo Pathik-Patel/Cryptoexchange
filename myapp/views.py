@@ -52,55 +52,6 @@ def signup_view(request):
     return render(request, 'signup.html', {'user_form': user_form, 'profile_form': profile_form})
 
 
-# block access to signup page if user is already logged in
-def signup_with_referrer_view(request, referral_code):
-    # check if user is already logged in
-    if request.user.is_authenticated:
-        return redirect('portfolio')
-
-    try:
-        # get the User Profile of the referrer
-        referrer = User.objects.get(profile__referral_code=referral_code)
-    except User.DoesNotExist:
-        # show error message if referrer does not exist
-        return HttpResponse("Referrer does not exist")
-
-    if request.method == 'POST':
-        user_form = CustomUserCreationForm(request.POST)
-        profile_form = ProfileForm(request.POST, request.FILES)
-
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save(commit=False)
-            user.password = make_password(user_form.cleaned_data['password1'])
-            user.email = user_form.cleaned_data['email']
-            user.save()
-            profile = profile_form.save(commit=False)
-            profile = Profile.objects.create(
-                user=user,
-                referral_code=generate_referral_code(),
-                id_photo=request.FILES['id_photo']
-            )
-            profile.save()
-
-            # create a referral instance
-            referral = Referal.objects.create(user=user, referrer=referrer)
-            referral.save()
-
-            if referrer is not None:
-                referrer.profile.bonus += 100  # add referral bonus to referrer
-                referrer.profile.save()
-                messages.success(request,
-                                 f'{referrer.username} recieved a bonus of 100 points from you because you signed up using their referral link!')
-
-            messages.success(request, 'You have successfully signed up!')
-            return redirect('login')
-    else:
-        user_form = CustomUserCreationForm()
-        profile_form = ProfileForm()
-
-    return render(request, 'signup.html', {'user_form': user_form, 'profile_form': profile_form, 'referrer': referrer})
-
-
 def login_view(request):
     # check if user is already logged in
     if request.user.is_authenticated:
